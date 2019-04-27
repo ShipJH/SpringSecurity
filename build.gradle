@@ -61,9 +61,15 @@ dependencies {
     
     compile 'org.lazyluke:log4jdbc-remix:0.2.7'
     
+    //mySql
+    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    
     //시큐리티 버전 (책은 4.2로 사용중...)
     compile 'org.springframework.security:spring-security-web:5.1.1.RELEASE'
     compile 'org.springframework.security:spring-security-config:5.1.1.RELEASE'
+    
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+	compileOnly 'org.projectlombok:lombok:1.16.18'
     
 }
 
