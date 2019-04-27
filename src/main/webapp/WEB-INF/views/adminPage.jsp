@@ -7,6 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-newfile
+adminPage !~!!
+
+	<a href="/logout">loggout~!</a> 
 </body>
 </html>

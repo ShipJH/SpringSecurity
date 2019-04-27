@@ -8,5 +8,7 @@
 </head>
 <body>
 home~~
+
+	<a href="/logout">loggout~!</a> 
 </body>
 </html>

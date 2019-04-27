@@ -14,10 +14,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { //스프링프레�
 	public void configure(final AuthenticationManagerBuilder auth) throws Exception{
 		// 인메모리 방식으로 유저를 설정한다.
 		//TODO: 추후에는 DB에 저장된 유저를 가져와 세션에 올릴 것 임.
-		auth.inMemoryAuthentication()
-			.withUser("bae")
-			.password("{noop}1234") // 시큐리티 5버전 이상부터는 
-			.roles("USER");
+		auth.inMemoryAuthentication().withUser("bae").password("{noop}1234").roles("USER")
+			 					.and().withUser("kim").password("{noop}1234").roles("ADMIN")
+			 					.and().withUser("hwang").password("{noop}1234").roles("NOAUTH");
 		
 		/*
 		 * spring-security-core : 5.0.0.RC1에서 기본 PasswordEncoder는 DelegatingPasswordEncoder로 빌드됩니다. 
@@ -32,10 +31,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { //스프링프레�
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-			.antMatchers("/**").access("hasRole('USER')") //모든 유형의 url맵핑은  USER라는 권한을 부여받은 다음에 접근이 가능하도록 설정
-			.and().formLogin() 
-			.and().httpBasic()//시큐리티에서 기본적으로 제공하는 로그인폼 ( TODO: 추후에는 로그인페이지를 직접 지정할 것 . )
-			.and().logout()
+		    .antMatchers("/loginForm").permitAll() /* #2 이렇게 설정하지 않으면 권한에 엑세스를 설정하려고한다. 
+		    									          사실상 로그인 페이지나, 로그아웃, 회원가입 등 로그인이전에 처리되어야 할 것 (권한이 필요없는 페이지)
+		    									         에서는 권한을 넣을 수 없는것이 당연하다.
+		    									   */
+		    .antMatchers("/loginGo").permitAll()   
+			.antMatchers("/**").access("hasAnyRole('USER' , 'ADMIN')") //모든 유형의 url맵핑은  USER라는 권한을 부여받은 다음에 접근이 가능하도록 설정
+			/* #2 antMatchers에 있어서 순서도 중요하다. 적은 단위로 먼저 위에 쪼개야한다. 예를들어. 
+			 * antMatchers("/**").access("hasRole('USER')")
+			 * antMatchers("/board").access("hasRole('ADMIN')")
+			 * 이런 식으로 배치할 경우, /** 이기 때문에 /board의 ADMIN 규칙을 체크하지 않고 모두 통과시키게 된다.
+			 * 
+			 * 그 뒤에 hasAnyRole 이나 hasRole 의 차이등 표현식의 차이는 각자 공부해서 발표해보도록 하자.
+			 */
+			
+			.and()
+			.formLogin()
+			.loginPage("/loginForm") /* #2 인증되지 않은 사용자가 접근하는경우 스프링시큐리티가 리다이렉션할 위치를 지정.
+										    미지정시, DefaultLoginPageGeneratingFilter가 /spring_security_login으로 리다이렉션을 한다.
+										  FilterChainProxy가 DefaultLoginPageGeneratingFilte를 선택해 기본 로그인 페이지를 보여준다.  
+									  */
+			.loginProcessingUrl("/loginGo") /* #2 /login/form 에서 로그인한 사용자가 입력한 ID와 PASSWORD를 POST방식으로 전달받아 
+											       사용자 인증을 하는 부분.			
+											*/
+			.failureUrl("/loginForm?error") /* #2 로그인 시도(loginProcessingUrl) 에서 실패하거나 에러가 난 경우 이동할 페이지
+											    여기서는 다시 로그인 페이지로 이동하며 메세지를 띄어줄 생각이므로, 다시 /login/form로 error를 들고 이동. */
+			.usernameParameter("username") // #2 유저가 /login/form 에서 입력한 파라미터
+			.passwordParameter("password") // #2 유저가 /login/form 에서 입력한 파라미터
+			
+			.defaultSuccessUrl("/defaultPage") // #2 로그인이 성공했을 시, 이동되는 페이지 ( 기본적인 설정은 welcome page가 됨. )
+			
+			
+//			.and().httpBasic()
+			.and()
+			.logout()
+			.logoutUrl("/logout")
+			.logoutSuccessUrl("/loginForm?logout=OK")
+			
+			
+			
 			.and().csrf().disable(); //책에서 추후에 다룬다고함
 	}
 	

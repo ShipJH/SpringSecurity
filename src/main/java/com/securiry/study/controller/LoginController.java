@@ -1,5 +1,7 @@
 package com.securiry.study.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,16 +18,25 @@ public class LoginController {
 		return "home";
 	}
 	
-	@RequestMapping(value="/test", method=RequestMethod.GET)
-	public String test(Model model) {
+	// #2 사용자 커스텀 로그인 페이지.
+	@RequestMapping(value="/loginForm", method=RequestMethod.GET)
+	public String goLoginForm(Model model, HttpServletRequest req) {
 		
-		model.addAttribute("msg", "Hi~~!~!~");
-		return "NewFile";
+		if(req.getParameter("loggout") != null) {
+			model.addAttribute("loggout", "loggout");
+		}
+		
+		
+		return "loginPage";
 	}
 	
-	@RequestMapping(value="/test2", method=RequestMethod.GET)
-	public @ResponseBody String test2(Model model) {
+	// #2 로그인이후에 권한별 페이지를 보여줄 곳을 설정.
+	@RequestMapping(value="/defaultPage", method=RequestMethod.GET)
+	public String defaultPage(Model model, HttpServletRequest req) {
 		
-		return "home";
+		if(req.isUserInRole("ADMIN")) {
+			return "adminPage";
+		}
+		return "redirect:/";
 	}
 }
