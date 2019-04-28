@@ -1,6 +1,7 @@
 package com.securiry.study.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ public class LoginController {
 	@RequestMapping(value="/loginForm", method=RequestMethod.GET)
 	public String goLoginForm(Model model, HttpServletRequest req) {
 		
+		
 		if(req.getParameter("loggout") != null) {
 			model.addAttribute("loggout", "loggout");
 		}
@@ -39,4 +41,19 @@ public class LoginController {
 		}
 		return "redirect:/";
 	}
+	
+//	@RequestMapping(value="/logout", method=RequestMethod.GET)
+//	public String defaultPage3(Model model, HttpServletRequest req , HttpSession ses) {
+//
+//		
+//		
+//		service.insertLogoutLog();
+//		
+//		ses.invalidate();
+//		
+//		
+//		
+//		return "redirect:/";
+//	}
+	
 }

@@ -1,5 +1,7 @@
 package com.securiry.study.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import com.securiry.study.security.SecurityConfig;
